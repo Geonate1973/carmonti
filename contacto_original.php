@@ -16,11 +16,6 @@
 <link rel="stylesheet" type="text/css" href="css/responsive.css"/>
 <script src="js/jquery-1.9.0.min.js"></script><!-- scripts at the bottom of the document -->
 
-<!-- QUERY para RECAPTCHA -->
-<script src="https://www.google.com/recaptcha/api.js" async defer></script>
-<!-- FIN RECAPTCHA -->
-
-
 </head>
 <body>
 <div class="boxedtheme">
@@ -98,8 +93,15 @@
 
 
 
+<?php
 
-    <form  action="php/enviar_copy2.php" method="POST" enctype="multipart/form-data">
+$action=$_REQUEST['action'];
+if ($action=="")    /* display the contact form */
+    {
+
+
+    ?>
+    <form  action="" method="POST" enctype="multipart/form-data">
     <input type="hidden" name="action" value="submit">
     Nombre Completo:<br>
     <input name="name" type="text" value="" size="30" required /><br>
@@ -115,13 +117,47 @@
     <input name="telefono" type="text" value="" size="30" required /><br>
     Mensaje:<br>
     <textarea name="message" rows="7" cols="30" required ></textarea><br>
-		<!-- Codigo para mostrar cuadro de recaptcha -->
-<div class="g-recaptcha" data-sitekey="6Ldjp7UUAAAAACbbml8vD0EODGJTdfgBiA9Nj1EF"></div>
-<!-- fin de codigo de recaptcha -->
-	<input type="submit" class="button" value="Send email"/>
-	</form>
-	
-	
+
+    <input type="submit" class="button" value="Send email"/>
+    </form>
+
+
+    <?php
+    } 
+else                /* send the submitted data */
+    {
+    $name=$_REQUEST['name'];
+	$email=$_REQUEST['email'];
+    $direccion=$_REQUEST['direccion'];
+	$distrito=$_REQUEST['distrito'];
+	$referencia=$_REQUEST['referencia'];
+	$telefono=$_REQUEST['telefono'];
+	$message=$_REQUEST['message'];
+	$captcha = $_REQUEST['g-recaptcha-response'];
+	$secret = '6Ldjp7UUAAAAALtTekKBLlyf3k1271qwsrf32ucV';
+
+	if (($name=="")||($email=="")||($direccion=="") || ($distrito=="")|| ($referencia=="") ||($telefono=="")||($message==""))
+        {
+        echo "Requiere llenar todas los datos, regresa al <a href=\"\">formulario</a> por favor.";
+        }
+    else{   
+		$mensaje = "
+			Nombre: " . $name . " 
+			Email: " . $email . " 
+			Direccion: " . $direccion . " 
+			Distrito: " . $distrito . " 
+			Referencia:: " . $referencia . " 
+			Telefono: ".$telefono."
+			Su mensaje es el siguiente:  ". $message . " 
+			Enviado el " . date('d/m/Y', time());
+		
+        $from="From: $name<$email>\r\nReturn-path: $email";
+        $subject="Mensaje desde formulario CV CARMONTI";
+        mail("geonate@gmail.com", $subject, $mensaje, $from);
+        echo "Ya enviamos tu correo, dentro de poco nuestro personal se contactará contigo, gracias por confiar en nosotros!";
+        }
+    }  
+?>
 
 				</div>
 			</div>
